@@ -68,7 +68,7 @@
                 <p class="mt-2 text-sm opacity-90">Пропозиція діє лише сьогодні!</p>
             </div>
 
-            <!-- ВБУДОВАНА СТОРІНКА ПОДЯКИ (показується після успішного замовлення) -->
+            <!-- ВБУДОВАНА СТОРІНКА ПОДЯКИ (прихована і не використовується в цьому режимі) -->
             <div id="thank-you-message" class="hidden max-w-lg mx-auto bg-white p-8 sm:p-10 rounded-xl shadow-2xl text-center">
                 <div class="flex justify-center mb-6">
                     <div class="text-white bg-teal-500 rounded-full p-4 shadow-lg">
@@ -210,8 +210,11 @@
 
             <div id="form-container" class="mt-8 bg-white p-6 sm:p-8 rounded-xl shadow-2xl border-t-4 border-teal-500">
                 
-                <!-- Форма тепер націлена на ваш Google Forms URL -->
-                <form id="order-form" class="space-y-4">
+                <!-- ФОРМА: КЛАСИЧНИЙ МЕТОД POST -->
+                <form id="order-form" class="space-y-4" 
+                      action="https://docs.google.com/forms/d/e/1FAIpQLSeQ-8IAZaHRbCAZ4yiIaRyzpFBrcdX-butMl1FFp9D3gbKA0w/formResponse"
+                      method="POST"
+                      target="google-form-target">
                     <div>
                         <input type="text" name="entry.864741366" id="nameInput" required placeholder="Ваше Ім'я та Прізвище" 
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition-shadow">
@@ -227,6 +230,9 @@
                     
                     <p class="text-sm text-gray-500">Ми гарантуємо конфіденційність ваших даних. Оплата при отриманні.</p>
                 </form>
+                
+                <!-- ПРИХОВАНИЙ IFRAME ДЛЯ БЕЗШУМНОЇ ВІДПРАВКИ -->
+                <iframe id="google-form-target" name="google-form-target" style="display:none;"></iframe>
 
             </div>
         </div>
@@ -282,52 +288,39 @@
         });
 
         // =========================================================================
-        // JS для логіки форми та Google Forms інтеграції (AJAX/Fetch)
+        // JS для логіки форми (класичний POST через iframe)
         // =========================================================================
-        
-        // ВАШ УНІКАЛЬНИЙ ACTION URL З GOOGLE FORMS
-        const GOOGLE_FORM_ACTION_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeQ-8IAZaHRbCAZ4yiIaRyzpFBrcdX-butMl1FFp9D3gbKA0w/formResponse"; 
         
         const orderForm = document.getElementById('order-form');
         const mainContent = document.getElementById('main-content');
         const orderSection = document.getElementById('order');
         const thankYouMessage = document.getElementById('thank-you-message');
+        const iframeTarget = document.getElementById('google-form-target');
 
-        orderForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Функція, яка викликається після успішної відправки даних у Google Forms (навіть якщо вони повертають помилку)
+        window.handleFormSubmit = function() {
+            // Приховання форми та показ подяки
+            mainContent.classList.add('hidden');
+            if (orderSection) orderSection.classList.add('hidden');
+            thankYouMessage.classList.remove('hidden');
             
-            const formData = new FormData(this);
-            
-            try {
-                // 1. Надсилаємо дані за допомогою Fetch API
-                // 'no-cors' - КЛЮЧОВИЙ елемент для обходу блокування на GitHub Pages
-                const response = await fetch(GOOGLE_FORM_ACTION_URL, {
-                    method: 'POST',
-                    body: formData,
-                    mode: 'no-cors' 
-                });
+            // Прокручуємо вгору
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
-                // 2. Показуємо повідомлення подяки
-                // Ця частина запускається незалежно від відповіді сервера, оскільки ми не можемо її перевірити через 'no-cors'
-                
-                mainContent.classList.add('hidden');
-                if (orderSection) orderSection.classList.add('hidden');
-                thankYouMessage.classList.remove('hidden');
-                
-                // Прокручуємо вгору до повідомлення
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                // 3. Очищаємо форму після відправки
-                this.reset();
-                
-            } catch (error) {
-                // Якщо і цей метод не спрацює (що вкрай рідко), показуємо аварійне повідомлення
-                console.error("Критична помилка при відправці AJAX/Fetch:", error);
-                
-                // Використовуємо надійний, але менш приємний для користувача alert, якщо все інше заблоковано
-                alert("Помилка при відправці замовлення. Спробуйте ще раз або перевірте налаштування Google Forms!");
-            }
+            // Очищаємо форму (для наступних замовлень)
+            orderForm.reset();
+        }
+        
+        // Додаємо обробник події, щоб викликати функцію handleFormSubmit після відправки
+        // Це спрацює, коли форма відправить дані в прихований iframe
+        orderForm.addEventListener('submit', function(e) {
+            // Викликаємо handleFormSubmit через 1.5 секунди, щоб дати час для відправки даних
+            // Це обхідний шлях, оскільки ми не можемо перевірити справжній успіх
+            setTimeout(window.handleFormSubmit, 1500); 
         });
+
+        // Встановлюємо target для iframe. Google Forms не повертає onload event, який можна прослухати напряму.
+        // Ми покладаємося на setTimeout після натискання кнопки.
     </script>
 </body>
 </html>
