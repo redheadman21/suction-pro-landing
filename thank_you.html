@@ -5,30 +5,58 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Дякуємо за Замовлення!</title>
-<!-- ПРАВИЛЬНЕ ПІДКЛЮЧЕННЯ TAILWIND -->
+<!-- ПРАВИЛЬНЕ ПІДКЛЮЧЕННЯ TAILWIND CSS -->
 <script src="https://www.google.com/search?q=https://cdn.tailwindcss.com"></script>
-<!-- ПРАВИЛЬНЕ ПІДКЛЮЧЕННЯ ШРИФТІВ -->
+<!-- ПРАВИЛЬНЕ ПІДКЛЮЧЕННЯ ШРИФТІВ INTER -->
 <link href="https://www.google.com/search?q=https://fonts.googleapis.com/css2%3Ffamily%3DInter:wght%40400%3B600%3B700%3B800%26display%3Dswap" rel="stylesheet">
 <style>
+/* Стиль для забезпечення єдиного шрифту */
 body { font-family: 'Inter', sans-serif; }
 </style>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
-<div class="max-w-xl w-full bg-white p-8 sm:p-12 rounded-2xl shadow-2xl text-center border-t-4 border-teal-500">
-<div class="text-6xl mb-6">🎉</div>
-<h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900">Дякуємо за ваше замовлення!</h1>
-<p class="mt-4 text-lg text-gray-600">
-Ваш силіконовий тримач SUCTION PRO вже пакується.
-</p>
-<p class="mt-2 text-md text-gray-700 font-semibold">
-Наш менеджер зв'яжеться з вами протягом 15 хвилин для підтвердження деталей доставки.
-</p>
-<div class="mt-8">
-<!-- ПРАВИЛЬНЕ ПОСИЛАННЯ НА ГОЛОВНУ СТОРІНКУ -->
-<a href="https://www.google.com/search?q=https://redheadman211.github.io/suction-pro-landing/" class="px-6 py-3 bg-teal-600 text-white font-semibold rounded-full hover:bg-teal-700 transition-colors shadow-md">
-Повернутися на головну
-</a>
+<!-- Картка Подяки -->
+<div class="max-w-xl w-full bg-white p-8 sm:p-12 rounded-2xl shadow-2xl text-center border-t-4 border-teal-500 animate-fadeIn">
+
+    <!-- Іконка підтвердження -->
+    <div class="text-6xl mb-6 text-teal-500">
+        ✅
+    </div>
+
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900">
+        Успіх! Замовлення прийнято!
+    </h1>
+    <p class="mt-4 text-lg text-gray-700">
+        Ваш **силіконовий тримач SUCTION PRO** додано до списку відправлень.
+    </p>
+
+    <!-- Інформація про наступні кроки -->
+    <div class="mt-6 p-4 bg-teal-50 rounded-lg border border-teal-200">
+        <p class="text-md text-teal-800 font-semibold">
+            Наш менеджер **обов'язково зв'яжеться з вами** протягом 15-30 хвилин для підтвердження деталей та адреси доставки.
+        </p>
+    </div>
+    
+    <div class="mt-8">
+        <!-- Кнопка повернення на головну сторінку з коректним посиланням -->
+        <a href="https://redheadman211.github.io/suction-pro-landing/" 
+           class="inline-block px-6 py-3 bg-teal-600 text-white font-semibold rounded-full hover:bg-teal-700 transition-colors shadow-lg transform hover:scale-105">
+            Повернутися до каталогу
+        </a>
+    </div>
 </div>
-</div>
+
+<!-- Проста JavaScript-анімація для появи -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const card = document.querySelector('.animate-fadeIn');
+        card.style.opacity = '0';
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.8s ease-in';
+            card.style.opacity = '1';
+        }, 50);
+    });
+</script>
+
 </body>
 </html>
