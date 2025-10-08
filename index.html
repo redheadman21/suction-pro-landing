@@ -228,9 +228,6 @@
                     <p class="text-sm text-gray-500">Ми гарантуємо конфіденційність ваших даних. Оплата при отриманні.</p>
                 </form>
 
-                <!-- Iframe, який використовується для безшумної відправки даних на Google Forms -->
-                <iframe id="google-form-iframe" name="google-form-iframe" style="display:none;"></iframe>
-
             </div>
         </div>
     </section>
@@ -285,42 +282,51 @@
         });
 
         // =========================================================================
-        // JS для логіки форми та Google Forms інтеграції
+        // JS для логіки форми та Google Forms інтеграції (AJAX/Fetch)
         // =========================================================================
         
-        // ВАШ УНІКАЛЬНИЙ ACTION URL З GOOGLE FORMS (Отримано з посилання forms.gle/...)
+        // ВАШ УНІКАЛЬНИЙ ACTION URL З GOOGLE FORMS
         const GOOGLE_FORM_ACTION_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeQ-8IAZaHRbCAZ4yiIaRyzpFBrcdX-butMl1FFp9D3gbKA0w/formResponse"; 
         
         const orderForm = document.getElementById('order-form');
         const mainContent = document.getElementById('main-content');
         const orderSection = document.getElementById('order');
         const thankYouMessage = document.getElementById('thank-you-message');
-        const iframe = document.getElementById('google-form-iframe');
 
-        // Встановлюємо action та target для форми, щоб дані відправлялися в iframe
-        orderForm.setAttribute('action', GOOGLE_FORM_ACTION_URL);
-        orderForm.setAttribute('target', 'google-form-iframe');
-        orderForm.setAttribute('method', 'POST');
-
-
-        orderForm.addEventListener('submit', function(e) {
+        orderForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // 1. Відправляємо форму в прихований iframe
-            // Це ініціює відправку даних на Google Forms/Sheets
-            this.submit();
-
-            // 2. Показуємо повідомлення подяки
-            // Ця частина запускається незалежно від того, чи успішно Google зберіг дані.
-            mainContent.classList.add('hidden');
-            if (orderSection) orderSection.classList.add('hidden');
-            thankYouMessage.classList.remove('hidden');
+            const formData = new FormData(this);
             
-            // Прокручуємо вгору до повідомлення
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            try {
+                // 1. Надсилаємо дані за допомогою Fetch API
+                // 'no-cors' - КЛЮЧОВИЙ елемент для обходу блокування на GitHub Pages
+                const response = await fetch(GOOGLE_FORM_ACTION_URL, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors' 
+                });
 
-            // 3. Очищаємо форму після відправки
-            this.reset();
+                // 2. Показуємо повідомлення подяки
+                // Ця частина запускається незалежно від відповіді сервера, оскільки ми не можемо її перевірити через 'no-cors'
+                
+                mainContent.classList.add('hidden');
+                if (orderSection) orderSection.classList.add('hidden');
+                thankYouMessage.classList.remove('hidden');
+                
+                // Прокручуємо вгору до повідомлення
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // 3. Очищаємо форму після відправки
+                this.reset();
+                
+            } catch (error) {
+                // Якщо і цей метод не спрацює (що вкрай рідко), показуємо аварійне повідомлення
+                console.error("Критична помилка при відправці AJAX/Fetch:", error);
+                
+                // Використовуємо надійний, але менш приємний для користувача alert, якщо все інше заблоковано
+                alert("Помилка при відправці замовлення. Спробуйте ще раз або перевірте налаштування Google Forms!");
+            }
         });
     </script>
 </body>
